@@ -49,5 +49,22 @@ def upload_files():
 
     return jsonify({"message": "檔案成功上傳", "files": saved_files}), 200
 
+
+@app.route('/delete-file', methods=['POST'])
+def delete_file():
+    data = request.get_json()
+    filename = data.get('filename')
+
+    if not filename:
+        return jsonify({"error": "未提供檔名"}), 400
+
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(filename))
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return jsonify({"success": True}), 200
+    else:
+        return jsonify({"error": "檔案不存在"}), 404
+
 if __name__ == '__main__':
     app.run(debug=True)
